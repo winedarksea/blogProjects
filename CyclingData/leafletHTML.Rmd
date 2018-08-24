@@ -1,0 +1,35 @@
+---
+title: "Ride Start Locations Spring 2015 - April 2018"
+output: html_document
+---
+```{r setup, message=FALSE, warning=FALSE, echo=FALSE}
+library(ggplot2)
+library(ggmap)
+library("RColorBrewer")
+setwd("C:/Users/Owner/Documents/School/Spring 2018/PUBH R Class/ShinyProject/Team_Infinite_Loop")
+leaflet.data <- readRDS("leaflet.data.rda")
+# further refine MN and Colorado points
+leaflet.data2 <- rbind(leaflet.data[leaflet.data$n<20,],data.frame(Latitude = c(44.979, 38.843), Longitude = c(-93.235,-104.795), n = c(333,121)))
+```
+
+```{r, eval=FALSE, echo=FALSE, message=FALSE, warning = FALSE}
+library(leaflet)
+map1 <- leaflet(leaflet.data) %>% addProviderTiles(providers$CartoDB.DarkMatter)  %>% addMarkers( #, size = 15, units = "px", 
+clusterOptions = markerClusterOptions()) # intensity =~n
+map1
+```
+
+```{r, dpi = 300}
+mp <- NULL
+mapWorld <- borders("world", colour="gray50", fill="gray50") # create a layer of borders
+mp <- ggplot() + mapWorld 
+
+
+myPalette <- colorRampPalette(rev(brewer.pal(5, "YlOrRd")))
+sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(1, 500))
+sc2 <- scale_colour_gradient2(low = "purple3", high = "red2", midpoint = 60,limits=c(1, 335))
+
+mp <- mp + geom_point(data=leaflet.data2, aes(x=Longitude, y=Latitude, color=n,  size = n)) + sc
+mp <- mp + ggtitle("Kelly Catlin Ride Locations March 2015 - March 2018")
+mp
+```
